@@ -1,8 +1,26 @@
 # Refute
 
-A design proposal for a SAT-based conjecture engine for finite graph theory.
+A design proposal for a SAT-based conjecture engine for finite graph theory, plus a small standalone toy for encoding edge-coloring as CNF.
 
-**This repository is a design sketch, not an implementation.** There is no working library, solver pipeline, or public API yet. The Python fragment below is proposed syntax only; `import refute` will not work.
+The Python DSL fragment below is proposed syntax only; `import refute` will not work. There is not yet a conjecture engine, CaDiCaL integration, or `cake_lpr` proof checking in this repository.
+
+## Toy demo (implemented)
+
+`coloring_cnf.py` encodes *k*-edge-coloring of a fixed simple undirected graph as DIMACS CNF. It can export the formula for an external SAT solver and can decide small instances with a built-in toy DPLL procedure. That DPLL solver is not proof-producing.
+
+This is edge-coloring (chromatic index), not vertex-coloring (chromatic number). The distinction matters for the Petersen graph, which is 3-vertex-colorable but not 3-edge-colorable.
+
+```bash
+python3 test_coloring_cnf.py
+python3 coloring_cnf.py --help
+python3 coloring_cnf.py --example triangle --colors 2
+python3 coloring_cnf.py --example triangle --colors 3
+python3 coloring_cnf.py --example petersen --colors 3
+python3 coloring_cnf.py --example petersen --colors 4
+python3 coloring_cnf.py --example petersen --colors 3 --encode-only --out petersen-3.cnf
+```
+
+A SAT answer is independently checked as a concrete edge-coloring. An UNSAT answer from the toy solver is only a decision of this encoding on that instance, not a checked certificate.
 
 ## Proposed user syntax
 
@@ -66,4 +84,6 @@ Triage should stop after **3 attempts or 45 minutes**. A failure remains **Unkno
 
 ## Status
 
-Design only. No solver integration, no tests, and no published results live in this repository.
+The conjecture DSL, CaDiCaL pipeline, and `cake_lpr` certificates are still a design proposal and are not implemented.
+
+What *is* implemented is a small stdlib-only *k*-edge-coloring CNF encoder, a toy DPLL solver for small instances, and unit tests against brute-force colorability, including the Petersen graph as a 3-edge-coloring UNSAT example and a 4-edge-coloring SAT example. Those tests do not constitute the planned checked milestone (a `cake_lpr`-verified certificate).
